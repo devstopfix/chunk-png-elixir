@@ -42,39 +42,44 @@ defmodule ChunkPNGTest do
     end
 
     test "NULL removed from key" do
-      %{raw: raw, length: 4} = ChunkPNG.TEXT.new!("k\0y", "v")
+      assert %{raw: raw, length: 4} = ChunkPNG.TEXT.new!("k\0y", "v")
       assert {8, 4} == :binary.match(raw, <<?k, ?y, 0, ?v>>)
     end
 
     test "NULL removed from value" do
-      %{raw: raw, length: 5} = ChunkPNG.TEXT.new!("k", "v\0al")
+      assert %{raw: raw, length: 5} = ChunkPNG.TEXT.new!("k", "v\0al")
       assert {8, 5} == :binary.match(raw, <<?k, 0, ?v, ?a, ?l>>)
     end
 
     test "single linefeed character" do
-      %{raw: raw, length: 6} = ChunkPNG.TEXT.new!("k", "v\r\nal")
+      assert %{raw: raw, length: 6} = ChunkPNG.TEXT.new!("k", "v\r\nal")
       assert {8, 6} == :binary.match(raw, <<?k, 0, ?v, 0x0A, ?a, ?l>>)
     end
 
     test "keyword with leading space" do
-      %{raw: raw, length: 3} = ChunkPNG.TEXT.new!(" k", "v")
+      assert %{raw: raw, length: 3} = ChunkPNG.TEXT.new!(" k", "v")
       assert {8, 3} == :binary.match(raw, <<?k, 0, ?v>>)
     end
 
     test "keyword with trailing space" do
-      %{raw: raw, length: 3} = ChunkPNG.TEXT.new!("k ", "v")
+      assert %{raw: raw, length: 3} = ChunkPNG.TEXT.new!("k ", "v")
       assert {8, 3} == :binary.match(raw, <<?k, 0, ?v>>)
     end
 
     test "keyword with consecutive spaces" do
-      %{raw: raw} = ChunkPNG.TEXT.new!("k  ey", "v")
+      assert %{raw: raw} = ChunkPNG.TEXT.new!("k  ey", "v")
       assert :nomatch == :binary.match(raw, "  ")
       assert {8, 4} == :binary.match(raw, "k ey")
     end
 
     test "keyword removes restricted chars" do
-      %{raw: raw, length: 5} = ChunkPNG.TEXT.new!(<<?k, 0x19, 0x7F, ?e, ?y>>, "v")
+      assert %{raw: raw, length: 5} = ChunkPNG.TEXT.new!(<<?k, 0x19, 0x7F, ?e, ?y>>, "v")
       assert {8, 5} == :binary.match(raw, <<?k, ?e, ?y, 0, ?v>>)
+    end
+
+    test "output with e-acute is latin-1" do
+      assert %{raw: raw, length: 6} = ChunkPNG.TEXT.new!("k", "José")
+      assert <<6::size(32), "tEXt", ?k, 0x00, ?J, ?o, ?s, 0xE9, _crc::size(32)>> = raw
     end
   end
 
