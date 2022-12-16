@@ -23,8 +23,8 @@ defmodule ChunkPNG do
 
   There are three forms of textual chunks:
 
-  * `tEXt` - simple key-value using the Latin-1 character set
-  * `iTXt` - simple key-value using UTF-8 encoding with optional value compression
+  * `tEXt` - simple key-value using the Latin-1 character set (see `ChunkPNG.TEXT`)
+  * `iTXt` - simple key-value using UTF-8 encoding with optional value compression (see `ChunkPNG.ITXT`)
   * `zTXt` - equivalent to `tEXt` but using deflate compression for large text blocks
 
   When finished the list of chunks can be written out to a file or a buffer.

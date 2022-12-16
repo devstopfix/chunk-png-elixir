@@ -9,7 +9,7 @@ defmodule ChunkPNG.MixProject do
       elixir: "~> 1.10",
       package: package(),
       start_permanent: Mix.env() == :prod,
-      version: "1.0.347"
+      version: "1.0.348"
     ]
   end
 

@@ -3,6 +3,7 @@ defmodule ChunkPNGTest do
   # doctest ChunkPNG
 
   alias ChunkPNG.Chunk
+  alias ChunkPNG.ITXT
   alias ChunkPNG.TEXT
 
   @png "test/elixir.png"
@@ -23,6 +24,27 @@ defmodule ChunkPNGTest do
   describe "ChunkPNG.Chunk.crc/2" do
     test "IHDR" do
       assert 3_947_343_424 == Chunk.crc("IHDR", <<0, 0, 1, 194, 0, 0, 0, 188, 8, 6, 0, 0, 0>>)
+    end
+  end
+
+  describe "ChunkPNG.ITXT" do
+    test "output with e-acute is utf-8" do
+      assert %{raw: raw, length: 11} = ITXT.new("k", "José")
+
+      assert <<11::size(32), "iTXt", ?k, 0x00, 0x00, 0x00, 0x00, 0x00, ?J, ?o, ?s, 0xC3, 0xA9,
+               _crc::size(32)>> = raw
+    end
+
+    test "key with Cyrillic Kje is utf-8" do
+      assert %{raw: raw, length: 9} = ITXT.new("ḱ", "v")
+
+      assert <<9::size(32), "iTXt", 0xE1, 0xB8, 0xB1, 0x00, 0x00, 0x00, 0x00, 0x00, ?v,
+               _crc::size(32)>> = raw
+    end
+
+    test "key without leading and trailing spaces" do
+      assert %{raw: raw, length: 7} = ITXT.new(" k  ", "v")
+      assert <<7::size(32), "iTXt", ?k, 0x00, _::binary>> = raw
     end
   end
 

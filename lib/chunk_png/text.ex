@@ -30,13 +30,18 @@ defmodule ChunkPNG.TEXT do
     %Chunk{length: len, type: @chunk_type, crc: crc, raw: raw}
   end
 
+  @doc false
+  def normalize_lf(s), do: String.replace(s, ~r/\r\n/, "\n")
+
+  @doc false
+  def normalize_spaces(s), do: String.replace(s, ~r/[ ]{2,}/, " ")
+
+  @doc false
+  def strip_null(s), do: :binary.replace(s, <<0x00>>, <<>>)
+
   defp encode_latin1(s), do: Codepagex.from_string!(s, :iso_8859_1)
-  defp normalize_spaces(s), do: String.replace(s, ~r/[ ]{2,}/, " ")
-  defp normalize_lf(s), do: String.replace(s, ~r/\r\n/, "\n")
 
   defp restrict_chars(s) do
     for <<c <- s>>, (c >= 32 and c <= 126) or (c >= 161 and c <= 255), into: "", do: <<c>>
   end
-
-  defp strip_null(s), do: :binary.replace(s, <<0x00>>, <<>>)
 end
