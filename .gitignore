@@ -24,3 +24,6 @@ chunk_png-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# Libraries don't specify config
+/config/

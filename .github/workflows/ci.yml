@@ -1,0 +1,27 @@
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Elixir ${{matrix.elixir}} (Erlang/OTP ${{matrix.otp}})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        otp: ["24.3.4"]
+        elixir: ["1.14", "1.13", "1.12", "1.11.4"]
+        include:
+          - elixir: "1.14"
+            otp: "25.1"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - run: mix deps.get
+      - run: mix compile --warnings-as-errors
+      - name: "Check formatted?"
+        run: mix format mix.exs "lib/**/*.ex" "test/**/*.exs" --check-formatted
+        if: ${{ startsWith(matrix.elixir, '1.14') }}
+      - run: mix test
