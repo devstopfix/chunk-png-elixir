@@ -46,5 +46,32 @@ faster compilation we recommend adding this configuration to your application:
 config :codepagex, :encodings, [:iso_8859_1]
 ```
 
+## Example
+
+Fetch an image:
+
+```bash
+wget https://elixir-lang.org/images/logo/logo.png -O /tmp/elixir.png
+```
+
+Manipulate and write:
+
+```elixir
+{:ok, img} = ChunkPNG.parse_file!("/tmp/elixir.png")
+
+img
+|> ChunkPNG.insert_left(ChunkPNG.TEXT.new!("Copyright", "José Valim"))
+|> ChunkPNG.write_file("/tmp/elixir-c.png")
+```
+
+Verify:
+
+```bash
+% hexdump -C /tmp/elixir-c.png | grep -A 1 Copy
+00000020  40 00 00 00 14 74 45 58  74 43 6f 70 79 72 69 67  |@....tEXtCopyrig|
+00000030  68 74 00 4a 6f 73 e9 20  56 61 6c 69 6d d0 b2 dd  |ht.Jos. Valim...|
+```
+
+
 [codepagex]: https://github.com/tallakt/codepagex#encoding-selection
 [latin1]: https://en.wikipedia.org/wiki/ISO/IEC_8859-1
