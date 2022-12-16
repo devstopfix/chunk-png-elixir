@@ -22,7 +22,8 @@ defmodule ChunkPNG.MixProject do
   defp deps do
     [
       {:codepagex, "~> 0.1.6"},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 
